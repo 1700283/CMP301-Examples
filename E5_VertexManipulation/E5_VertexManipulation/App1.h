@@ -24,6 +24,7 @@ protected:
 private:
 	ManipulationShader* shader;
 	PlaneMesh* mesh;
+	CubeMesh* cube_Mesh_;
 	Light* light;
 
 	float totalTime = 0.0f;

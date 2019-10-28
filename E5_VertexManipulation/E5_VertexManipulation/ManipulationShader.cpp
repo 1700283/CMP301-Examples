@@ -122,8 +122,8 @@ void ManipulationShader::setShaderParameters(ID3D11DeviceContext* deviceContext,
 	deviceContext->Map(timeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	timePtr = (TimeBufferType*)mappedResource.pData;
 	timePtr->amplitude = ampl_;
-	timePtr->frequency = 1.f;
-	timePtr->speed = 1.f;
+	timePtr->frequency = freq_;
+	timePtr->speed = speed_;
 	timePtr->time = time;
 	deviceContext->Unmap(timeBuffer, 0);
 	deviceContext->VSSetConstantBuffers(1, 1, &timeBuffer);

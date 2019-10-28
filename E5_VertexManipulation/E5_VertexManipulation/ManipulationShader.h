@@ -29,7 +29,7 @@ public:
 	~ManipulationShader();
 
 	void setShaderParameters(ID3D11DeviceContext* deviceContext, const XMMATRIX &world, const XMMATRIX &view, const XMMATRIX &projection, ID3D11ShaderResourceView* texture, Light* light, float time);
-	float time_, ampl_;
+	float time_, ampl_, freq_, speed_;
 private:
 	void initShader(const wchar_t* cs, const wchar_t* ps);
 

@@ -33,13 +33,14 @@ struct OutputType
 OutputType main(InputType input)
 {
 	OutputType output;
-
 	//offset position based on sine wave
-	input.position.y = amplitude* sin(input.position.x + time);
+	input.position.y = amplitude* sin((input.position.x * frequency) + (speed*time));
+	//input.position.y += amplitude * cos((input.position.z * frequency) + (speed*time));
 	//modify normals
-	input.normal.x = amplitude * (1 - cos(input.position.x + time));
-	input.normal.y = amplitude * (abs(cos(input.position.x + time)));
+	input.normal.x = amplitude * (1 - cos((input.position.x*frequency) + (speed*time)));
+	input.normal.y = amplitude * (abs(cos((input.position.x*frequency) + (speed*time))));
 
+	
 	// Calculate the position of the vertex against the world, view, and projection matrices.
 	output.position = mul(input.position, worldMatrix);
 	output.position = mul(output.position, viewMatrix);

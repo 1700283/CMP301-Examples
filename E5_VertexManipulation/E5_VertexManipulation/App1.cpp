@@ -5,6 +5,7 @@
 App1::App1()
 {
 	mesh = nullptr;
+	cube_Mesh_ = nullptr;
 	shader = nullptr;
 }
 
@@ -17,6 +18,7 @@ void App1::init(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeigh
 
 	// Create Mesh object and shader object
 	mesh = new PlaneMesh(renderer->getDevice(), renderer->getDeviceContext());
+	cube_Mesh_ = new CubeMesh(renderer->getDevice(), renderer->getDeviceContext());
 	shader = new ManipulationShader(renderer->getDevice(), hwnd);
 	light = new Light;
 	light->setDiffuseColour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -37,6 +39,11 @@ App1::~App1()
 		mesh = 0;
 	}
 
+	if (cube_Mesh_)
+	{
+		delete cube_Mesh_;
+		cube_Mesh_ = 0;
+	}
 	if (shader)
 	{
 		delete shader;
@@ -82,10 +89,14 @@ bool App1::render()
 	viewMatrix = camera->getViewMatrix();
 	projectionMatrix = renderer->getProjectionMatrix();
 
-	// Send geometry data, set shader parameters, render object with shader
+	/*// Send geometry data, set shader parameters, render object with shader
 	mesh->sendData(renderer->getDeviceContext());
 	shader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, textureMgr->getTexture(L"brick"), light, totalTime);
 	shader->render(renderer->getDeviceContext(), mesh->getIndexCount());
+	*/
+	cube_Mesh_->sendData(renderer->getDeviceContext());
+	shader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, textureMgr->getTexture(L"brick"), light, totalTime);
+	shader->render(renderer->getDeviceContext(), cube_Mesh_->getIndexCount());
 
 	// Render GUI
 	gui();
@@ -106,8 +117,9 @@ void App1::gui()
 	// Build UI
 	ImGui::Text("FPS: %.2f", timer->getFPS());
 	ImGui::Checkbox("Wireframe mode", &wireframeToggle);
-	ImGui::SliderFloat("Amplitude_", &shader->ampl_, 1.0f, 10.0f, "Pos : (%.3f)", 1.0f);
-
+	ImGui::SliderFloat("Amplitude_", &shader->ampl_, 0.0f, 3.0f, "Pos : (%.3f)", 1.0f);
+	ImGui::SliderFloat("Frequency_", &shader->freq_, 0.0f, 3.0f, "Pos : (%.3f)", 1.0f);
+	ImGui::SliderFloat("Speed_", &shader->speed_, 0.0f, 3.0f, "Pos : (%.3f)", 1.0f);
 	// Render UI
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
