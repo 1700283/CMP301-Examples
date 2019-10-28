@@ -8,6 +8,14 @@ cbuffer MatrixBuffer : register(b0)
 	matrix projectionMatrix;
 };
 
+cbuffer TimeBuffer : register(b1)
+{
+	float time;
+	float amplitude;
+	float frequency;
+	float speed;
+};
+
 struct InputType
 {
 	float4 position : POSITION;
@@ -25,6 +33,12 @@ struct OutputType
 OutputType main(InputType input)
 {
 	OutputType output;
+
+	//offset position based on sine wave
+	input.position.y = amplitude* sin(input.position.x + time);
+	//modify normals
+	input.normal.x = amplitude * (1 - cos(input.position.x + time));
+	input.normal.y = amplitude * (abs(cos(input.position.x + time)));
 
 	// Calculate the position of the vertex against the world, view, and projection matrices.
 	output.position = mul(input.position, worldMatrix);

@@ -62,6 +62,8 @@ bool App1::frame()
 		return false;
 	}
 
+	totalTime += timer->getTime();
+
 	return true;
 }
 
@@ -82,7 +84,7 @@ bool App1::render()
 
 	// Send geometry data, set shader parameters, render object with shader
 	mesh->sendData(renderer->getDeviceContext());
-	shader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, textureMgr->getTexture(L"brick"), light);
+	shader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, textureMgr->getTexture(L"brick"), light, totalTime);
 	shader->render(renderer->getDeviceContext(), mesh->getIndexCount());
 
 	// Render GUI
@@ -104,6 +106,7 @@ void App1::gui()
 	// Build UI
 	ImGui::Text("FPS: %.2f", timer->getFPS());
 	ImGui::Checkbox("Wireframe mode", &wireframeToggle);
+	ImGui::SliderFloat("Amplitude_", &shader->ampl_, 1.0f, 10.0f, "Pos : (%.3f)", 1.0f);
 
 	// Render UI
 	ImGui::Render();
