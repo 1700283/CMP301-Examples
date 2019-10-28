@@ -2,6 +2,7 @@
 // Standard issue vertex shader, apply matrices, pass info to pixel shader
 cbuffer MatrixBuffer : register(b0)
 {
+	//Matrices
 	matrix worldMatrix;
 	matrix viewMatrix;
 	matrix projectionMatrix;
