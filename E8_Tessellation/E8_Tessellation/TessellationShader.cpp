@@ -40,7 +40,6 @@ void TessellationShader::initShader(const wchar_t* vsFilename, const wchar_t* ps
 
 	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
 	D3D11_BUFFER_DESC matrixBufferDesc;
-	D3D11_BUFFER_DESC tessBufferDesc;
 
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
@@ -51,14 +50,7 @@ void TessellationShader::initShader(const wchar_t* vsFilename, const wchar_t* ps
 
 	renderer->CreateBuffer(&matrixBufferDesc, NULL, &matrixBuffer);
 
-	tessBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	tessBufferDesc.ByteWidth = sizeof(tessBufferType);
-	tessBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	tessBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	tessBufferDesc.MiscFlags = 0;
-	tessBufferDesc.StructureByteStride = 0;
-
-	renderer->CreateBuffer(&tessBufferDesc, NULL, &tessBuffer);
+	
 }
 
 void TessellationShader::initShader(const wchar_t* vsFilename, const wchar_t* hsFilename, const wchar_t* dsFilename, const wchar_t* psFilename)
@@ -66,9 +58,22 @@ void TessellationShader::initShader(const wchar_t* vsFilename, const wchar_t* hs
 	// InitShader must be overwritten and it will load both vertex and pixel shaders + setup buffers
 	initShader(vsFilename, psFilename);
 
+
+	D3D11_BUFFER_DESC tessBufferDesc;
+
+
 	// Load other required shaders.
 	loadHullShader(hsFilename);
 	loadDomainShader(dsFilename);
+
+		tessBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	tessBufferDesc.ByteWidth = sizeof(tessBufferType);
+	tessBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	tessBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	tessBufferDesc.MiscFlags = 0;
+	tessBufferDesc.StructureByteStride = 0;
+
+	renderer->CreateBuffer(&tessBufferDesc, NULL, &tessBuffer);
 }
 
 
@@ -82,16 +87,6 @@ void TessellationShader::setShaderParameters(ID3D11DeviceContext* deviceContext,
 	XMMATRIX tview = XMMatrixTranspose(viewMatrix);
 	XMMATRIX tproj = XMMatrixTranspose(projectionMatrix);
 
-	// Lock the constant buffer so it can be written to.
-	tessBufferType* tessPtr;
-	result = deviceContext->Map(tessBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	tessPtr = (tessBufferType*)mappedResource.pData;
-	tessPtr->edge_1 = 2;
-	tessPtr->edge_2 = 4;
-	tessPtr->edge_3 = 4;
-	tessPtr->inside = 4;
-	deviceContext->Unmap(tessBuffer, 0);
-	deviceContext->DSSetConstantBuffers(1, 1, &tessBuffer);
 
 	// Lock the constant buffer so it can be written to.
 	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -102,6 +97,16 @@ void TessellationShader::setShaderParameters(ID3D11DeviceContext* deviceContext,
 	deviceContext->Unmap(matrixBuffer, 0);
 	deviceContext->DSSetConstantBuffers(0, 1, &matrixBuffer);
 
+	// Lock the constant buffer so it can be written to.
+	tessBufferType* tessPtr;
+	result = deviceContext->Map(tessBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	tessPtr = (tessBufferType*)mappedResource.pData;
+	tessPtr->edge_1 = edge_1_;
+	tessPtr->edge_2 = edge_2_;
+	tessPtr->edge_3 = edge_3_;
+	tessPtr->inside = inside_;
+	deviceContext->Unmap(tessBuffer, 0);
+	deviceContext->HSSetConstantBuffers(0, 1, &tessBuffer);
 }
 
 
