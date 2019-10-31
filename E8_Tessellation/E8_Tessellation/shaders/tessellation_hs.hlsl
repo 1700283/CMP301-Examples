@@ -1,5 +1,13 @@
 // Tessellation Hull Shader
 // Prepares control points for tessellation
+cbuffer TessFactors : register(b1)
+{
+	int edge_1;
+	int edge_2;
+	int edge_3;
+	int inside;
+};
+
 struct InputType
 {
     float3 position : POSITION;
@@ -24,12 +32,12 @@ ConstantOutputType PatchConstantFunction(InputPatch<InputType, 3> inputPatch, ui
 
 
     // Set the tessellation factors for the three edges of the triangle.
-	output.edges[0] = 3;
-	output.edges[1] = 3;
+	output.edges[0] = edge_1;
+	output.edges[1] = 2;
 	output.edges[2] = 3;
 
     // Set the tessellation factor for tessallating inside the triangle.
-	output.inside = 3;
+	output.inside = 4;
 
     return output;
 }

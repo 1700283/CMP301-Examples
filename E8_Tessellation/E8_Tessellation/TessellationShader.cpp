@@ -40,6 +40,8 @@ void TessellationShader::initShader(const wchar_t* vsFilename, const wchar_t* ps
 
 	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
 	D3D11_BUFFER_DESC matrixBufferDesc;
+	D3D11_BUFFER_DESC tessBufferDesc;
+
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -49,7 +51,14 @@ void TessellationShader::initShader(const wchar_t* vsFilename, const wchar_t* ps
 
 	renderer->CreateBuffer(&matrixBufferDesc, NULL, &matrixBuffer);
 
-	
+	tessBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	tessBufferDesc.ByteWidth = sizeof(tessBufferType);
+	tessBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	tessBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	tessBufferDesc.MiscFlags = 0;
+	tessBufferDesc.StructureByteStride = 0;
+
+	renderer->CreateBuffer(&tessBufferDesc, NULL, &tessBuffer);
 }
 
 void TessellationShader::initShader(const wchar_t* vsFilename, const wchar_t* hsFilename, const wchar_t* dsFilename, const wchar_t* psFilename)
@@ -74,6 +83,17 @@ void TessellationShader::setShaderParameters(ID3D11DeviceContext* deviceContext,
 	XMMATRIX tproj = XMMatrixTranspose(projectionMatrix);
 
 	// Lock the constant buffer so it can be written to.
+	tessBufferType* tessPtr;
+	result = deviceContext->Map(tessBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	tessPtr = (tessBufferType*)mappedResource.pData;
+	tessPtr->edge_1 = 2;
+	tessPtr->edge_2 = 4;
+	tessPtr->edge_3 = 4;
+	tessPtr->inside = 4;
+	deviceContext->Unmap(tessBuffer, 0);
+	deviceContext->DSSetConstantBuffers(1, 1, &tessBuffer);
+
+	// Lock the constant buffer so it can be written to.
 	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	MatrixBufferType* dataPtr = (MatrixBufferType*)mappedResource.pData;
 	dataPtr->world = tworld;// worldMatrix;
@@ -81,6 +101,7 @@ void TessellationShader::setShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr->projection = tproj;
 	deviceContext->Unmap(matrixBuffer, 0);
 	deviceContext->DSSetConstantBuffers(0, 1, &matrixBuffer);
+
 }
 
 

@@ -87,7 +87,10 @@ void App1::gui()
 	// Build UI
 	ImGui::Text("FPS: %.2f", timer->getFPS());
 	ImGui::Checkbox("Wireframe mode", &wireframeToggle);
-
+	ImGui::SliderInt("Edge 1", &shader->edge_1_, 1.0f, 64.0f, "Pos : (%.3f)");
+	ImGui::SliderInt("Edge 2", &shader->edge_2_, 1.0f, 64.0f, "Pos : (%.3f)");
+	ImGui::SliderInt("Edge 3", &shader->edge_3_, 1.0f, 64.0f, "Pos : (%.3f)");
+	ImGui::SliderInt("Inside", &shader->inside_, 1.0, 64.0f, "Pos : (%.3f)");
 	// Render UI
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
