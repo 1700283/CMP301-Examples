@@ -5,7 +5,10 @@ cbuffer TessFactors : register(b0)
 	int edge_1;
 	int edge_2;
 	int edge_3;
+	int edge_4;
 	int inside;
+	int inside_2;
+	int padding[2];
 };
 
 struct InputType
@@ -16,8 +19,8 @@ struct InputType
 
 struct ConstantOutputType
 {
-    float edges[3] : SV_TessFactor;
-    float inside : SV_InsideTessFactor;
+    float edges[4] : SV_TessFactor;
+    float inside[2] : SV_InsideTessFactor;
 };
 
 struct OutputType
@@ -26,7 +29,7 @@ struct OutputType
     float4 colour : COLOR;
 };
 
-ConstantOutputType PatchConstantFunction(InputPatch<InputType, 3> inputPatch, uint patchId : SV_PrimitiveID)
+ConstantOutputType PatchConstantFunction(InputPatch<InputType, 4> inputPatch, uint patchId : SV_PrimitiveID)
 {    
     ConstantOutputType output;
 
@@ -34,20 +37,28 @@ ConstantOutputType PatchConstantFunction(InputPatch<InputType, 3> inputPatch, ui
 	output.edges[0] = edge_1;
 	output.edges[1] = edge_2;
 	output.edges[2] = edge_3;
+	output.edges[3] = edge_4;
 
     // Set the tessellation factor for tessallating inside the triangle.
-	output.inside = inside;
-
+	output.inside[0] = inside;
+	output.inside[1] = inside_2;
     return output;
 }
 
-
+/*
 [domain("tri")]
 [partitioning("integer")]
 [outputtopology("triangle_ccw")]
 [outputcontrolpoints(3)]
 [patchconstantfunc("PatchConstantFunction")]
-OutputType main(InputPatch<InputType, 3> patch, uint pointId : SV_OutputControlPointID, uint patchId : SV_PrimitiveID)
+*/
+
+[domain("quad")]
+[partitioning("integer")]
+[outputtopology("triangle_ccw")]
+[outputcontrolpoints(4)]
+[patchconstantfunc("PatchConstantFunction")]
+OutputType main(InputPatch<InputType, 4> patch, uint pointId : SV_OutputControlPointID, uint patchId : SV_PrimitiveID)
 {
     OutputType output;
 

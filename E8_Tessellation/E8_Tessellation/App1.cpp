@@ -4,7 +4,7 @@
 
 App1::App1()
 {
-
+	square_mesh = nullptr;
 }
 
 void App1::init(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight, Input *in, bool VSYNC, bool FULL_SCREEN)
@@ -14,6 +14,7 @@ void App1::init(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeigh
 
 	// Create Mesh object and shader object
 	mesh = new TessellationMesh(renderer->getDevice(), renderer->getDeviceContext());
+	square_mesh = new TessellationMesh(renderer->getDevice(), renderer->getDeviceContext());
 	shader = new TessellationShader(renderer->getDevice(), hwnd);
 }
 
@@ -24,7 +25,11 @@ App1::~App1()
 	BaseApplication::~BaseApplication();
 
 	// Release the Direct3D object.
-
+	if (square_mesh)
+	{
+		delete square_mesh;
+		square_mesh = 0;
+	}
 }
 
 
@@ -63,10 +68,15 @@ bool App1::render()
 	viewMatrix = camera->getViewMatrix();
 	projectionMatrix = renderer->getProjectionMatrix();
 
-	// Send geometry data, set shader parameters, render object with shader
+/*	// Send geometry data, set shader parameters, render object with shader
 	mesh->sendData(renderer->getDeviceContext());
 	shader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
 	shader->render(renderer->getDeviceContext(), mesh->getIndexCount());
+	*/
+	// Send geometry data, set shader parameters, render object with shader
+	square_mesh->sendData(renderer->getDeviceContext());
+	shader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	shader->render(renderer->getDeviceContext(), square_mesh->getIndexCount());
 
 	// Render GUI
 	gui();
@@ -85,12 +95,15 @@ void App1::gui()
 	renderer->getDeviceContext()->DSSetShader(NULL, NULL, 0);
 
 	// Build UI
+	shader->distance_ = sqrt(pow(camera->getPosition().x, 2) + pow(camera->getPosition().y, 2) + pow(camera->getPosition().z, 2));
 	ImGui::Text("FPS: %.2f", timer->getFPS());
 	ImGui::Checkbox("Wireframe mode", &wireframeToggle);
 	ImGui::SliderInt("Edge 1", &shader->edge_1_, 1.0f, 64.0f, "Pos : (%.3f)");
 	ImGui::SliderInt("Edge 2", &shader->edge_2_, 1.0f, 64.0f, "Pos : (%.3f)");
 	ImGui::SliderInt("Edge 3", &shader->edge_3_, 1.0f, 64.0f, "Pos : (%.3f)");
+	ImGui::SliderInt("Edge 4", &shader->edge_4_, 1.0f, 64.0f, "Pos : (%.3f)");
 	ImGui::SliderInt("Inside", &shader->inside_, 1.0, 64.0f, "Pos : (%.3f)");
+	ImGui::SliderInt("Inside 2", &shader->inside_2_, 1.0, 64.0f, "Pos : (%.3f)");
 	// Render UI
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

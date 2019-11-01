@@ -16,7 +16,10 @@ private:
 		int edge_1;
 		int edge_2;
 		int edge_3;
+		int edge_4;
 		int inside;
+		int inside_2;
+		int padding[2];
 	};
 public:
 
@@ -24,7 +27,8 @@ public:
 	~TessellationShader();
 
 	void setShaderParameters(ID3D11DeviceContext* deviceContext, const XMMATRIX &world, const XMMATRIX &view, const XMMATRIX &projection);
-	int edge_1_, edge_2_, edge_3_, inside_;
+	int edge_1_, edge_2_, edge_3_, edge_4_, inside_, inside_2_;
+	float distance_;
 
 private:
 	void initShader(const wchar_t* vsFilename, const wchar_t* psFilename);

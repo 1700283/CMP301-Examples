@@ -22,6 +22,8 @@ protected:
 
 private:
 	TessellationMesh* mesh;
+	
+	TessellationMesh* square_mesh;
 	TessellationShader* shader;
 };
 

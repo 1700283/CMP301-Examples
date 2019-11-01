@@ -97,6 +97,7 @@ void TessellationShader::setShaderParameters(ID3D11DeviceContext* deviceContext,
 	deviceContext->Unmap(matrixBuffer, 0);
 	deviceContext->DSSetConstantBuffers(0, 1, &matrixBuffer);
 
+	
 	// Lock the constant buffer so it can be written to.
 	tessBufferType* tessPtr;
 	result = deviceContext->Map(tessBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -104,7 +105,36 @@ void TessellationShader::setShaderParameters(ID3D11DeviceContext* deviceContext,
 	tessPtr->edge_1 = edge_1_;
 	tessPtr->edge_2 = edge_2_;
 	tessPtr->edge_3 = edge_3_;
+	tessPtr->edge_4 = edge_4_;
+	
+	inside_ = distance_;
+	if (distance_ < 3)
+	{
+		inside_ = 10;
+	}
+	if (distance_ > 3)
+	{
+		if (distance_ < 5)
+		{
+			inside_ = 6;
+		}
+	}
+	if (distance_ > 5)
+	{
+		if (distance_ < 8)
+		{
+			inside_ = 4;
+		}
+	}
+
+	if (distance_ > 8)
+	{
+		inside_ = 2;
+	}
 	tessPtr->inside = inside_;
+	tessPtr->inside_2 = inside_;
+	tessPtr->padding[0] = 1.f;
+	tessPtr->padding[1] = 1.f;
 	deviceContext->Unmap(tessBuffer, 0);
 	deviceContext->HSSetConstantBuffers(0, 1, &tessBuffer);
 }

@@ -24,14 +24,14 @@ void TessellationMesh::initBuffers(ID3D11Device* device)
 	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 
-	vertexCount = 3;
-	indexCount = 3;
+	vertexCount = 4;
+	indexCount = 4;
 
 	vertices = new VertexType[vertexCount];
 	indices = new unsigned long[indexCount];
 
 	// Load the vertex array with data.
-	vertices[0].position = XMFLOAT3(0.0f, 1.0f, 0.0f);  // Top.
+	vertices[0].position = XMFLOAT3(-1.0f, 1.0f, 0.0f);  // Top.
 	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
 	vertices[0].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
@@ -43,10 +43,14 @@ void TessellationMesh::initBuffers(ID3D11Device* device)
 	vertices[2].texture = XMFLOAT2(1.0f, 0.0f);
 	vertices[2].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
+	vertices[3].position = XMFLOAT3(1.0f, 1.0f, 0.0f);  // Bottom right.
+	vertices[3].texture = XMFLOAT2(1.0f, 0.0f);
+	vertices[3].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 	// Load the index array with data.
 	indices[0] = 0;  // Top/
 	indices[1] = 1;  // Bottom left.
 	indices[2] = 2;  // Bottom right.
+	indices[3] = 3;
 
 	// Set up the description of the static vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
