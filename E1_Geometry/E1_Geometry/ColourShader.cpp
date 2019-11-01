@@ -32,7 +32,7 @@ ColourShader::~ColourShader()
 void ColourShader::initShader(const wchar_t* vsFilename, const wchar_t* psFilename)
 {
 	D3D11_BUFFER_DESC matrixBufferDesc;
-	
+
 	// Load (+ compile) shader files
 	loadColourVertexShader(vsFilename);
 	loadPixelShader(psFilename);

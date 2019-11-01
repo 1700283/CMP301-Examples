@@ -46,7 +46,6 @@ void TexturedQuad::initBuffers(ID3D11Device* device)
 	indices[4] = 2;  // Bottom right.
 	indices[5] = 3;  // Top right.
 
-
 	D3D11_BUFFER_DESC vertexBufferDesc = { sizeof(VertexType_Texture) * vertexCount, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0, 0, 0 };
 	vertexData = { vertices, 0 , 0 };
 	device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);

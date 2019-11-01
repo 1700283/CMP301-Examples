@@ -23,7 +23,7 @@ private:
 	void initShader(const wchar_t* vs, const wchar_t* ps);
 
 private:
-	ID3D11Buffer* matrixBuffer;
+	ID3D11Buffer * matrixBuffer;
 };
 
 #endif

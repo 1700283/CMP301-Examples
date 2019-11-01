@@ -20,9 +20,11 @@ public:
 protected:
 	bool render();
 	void gui();
+	float rotate = 0;
+	float angle = 0;
 
 private:
-	TextureShader* textureShader;
+	TextureShader * textureShader;
 	TexturedQuad* mesh;
 };
 

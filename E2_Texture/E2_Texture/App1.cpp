@@ -14,6 +14,7 @@ void App1::init(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeigh
 	BaseApplication::init(hinstance, hwnd, screenWidth, screenHeight, in, VSYNC, FULL_SCREEN);
 
 	textureMgr->loadTexture(L"brick", L"res/brick1.dds");
+	textureMgr->loadTexture(L"arrow", L"res/arrow.png");
 
 	// Create Mesh object and shader object
 	mesh = new TexturedQuad(renderer->getDevice(), renderer->getDeviceContext());
@@ -51,7 +52,7 @@ bool App1::frame()
 	{
 		return false;
 	}
-	
+
 	// Render the graphics.
 	result = render();
 	if (!result)
@@ -79,7 +80,15 @@ bool App1::render()
 
 	// Send geometry data, set shader parameters, render object with shader
 	mesh->sendData(renderer->getDeviceContext());
-	textureShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, textureMgr->getTexture(L"brick"));
+	worldMatrix = XMMatrixRotationRollPitchYaw(0.0, 0.0, angle);
+	textureShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, textureMgr->getTexture(L"brick"), textureMgr->getTexture(L"arrow"));
+	textureShader->render(renderer->getDeviceContext(), mesh->getIndexCount());
+
+	// Send geometry data, set shader parameters, render object with shader
+	rotate = rotate + 1;
+	worldMatrix = XMMatrixMultiply(XMMatrixTranslation(3.0, 0.0, 0.0), XMMatrixRotationRollPitchYaw(0.0, 0.0, rotate));
+	mesh->sendData(renderer->getDeviceContext());
+	textureShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, textureMgr->getTexture(L"arrow"), textureMgr->getTexture(L"brick"));
 	textureShader->render(renderer->getDeviceContext(), mesh->getIndexCount());
 
 	// Render GUI
@@ -101,7 +110,7 @@ void App1::gui()
 	// Build UI
 	ImGui::Text("FPS: %.2f", timer->getFPS());
 	ImGui::Checkbox("Wireframe mode", &wireframeToggle);
-
+	ImGui::SliderFloat("Angle", &angle, 0.0, 360.0, "Pos : (%.3f)", 1.0f);
 	// Render UI
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
